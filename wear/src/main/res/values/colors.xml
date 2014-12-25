@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="top_left_color">#F44336</color>
+    <color name="top_left_highlight_color">#FFCCD2</color>
+    <color name="top_right_color">#9C27B0</color>
+    <color name="top_right_highlight_color">#E1BEE7</color>
+    <color name="bottom_left_color">#2196F3</color>
+    <color name="bottom_left_highlight_color">#BBDEFB</color>
+    <color name="bottom_right_color">#4CAF50</color>
+    <color name="bottom_right_highlight_color">#C8E6C9</color>
+</resources>
