@@ -1,0 +1,6 @@
+To Do
+-----
+
+- Fix initial flashing showing when activity is started.
+- Show length of sequence achieved when game is over.
+  * Use circle reveal?
