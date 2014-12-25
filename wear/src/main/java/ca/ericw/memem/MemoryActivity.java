@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
+import android.graphics.Color;
 import android.media.AudioAttributes;
 import android.os.Bundle;
 import android.os.Vibrator;
@@ -86,12 +87,13 @@ public class MemoryActivity extends Activity {
       }
     } else {
       _vibrator.vibrate(GAME_ENDED_VIBRATION, VIBRATION_ATTRIBUTES);
-      startNewGame();
+      showEndGame();
     }
   }
 
   /** Starts a new game. */
   private void startNewGame() {
+    Log.d(TAG, "Starting new game");
     _expectedEntries.clear();
     extendGame();
   }
@@ -136,6 +138,29 @@ public class MemoryActivity extends Activity {
     sequenceAnimation.start();
   }
 
+  /** Shows a reset animation to introduce a break between games. */
+  private void showEndGame() {
+    List<Animator> tintAnimations = new ArrayList<>(_expectedEntries.size());
+    for (Entry entry : ENTRIES) {
+      int entryId = entry.ordinal();
+      ObjectAnimator tintAnimation = ObjectAnimator.ofArgb(
+          _buttons[entryId].getBackground(),
+          "tint",
+          _buttonColors[entryId][0], Color.WHITE, _buttonColors[entryId][0]);
+      tintAnimation.setDuration(RESET_FLASH_MS);
+      tintAnimations.add(tintAnimation);
+    }
+
+    AnimatorSet resetAnimation = new AnimatorSet();
+    resetAnimation.playTogether(tintAnimations);
+    resetAnimation.addListener(new AnimatorListenerAdapter() {
+      @Override public void onAnimationEnd(Animator animation) {
+        startNewGame();
+      }
+    });
+    resetAnimation.start();
+  }
+
   /** Describes an entry in the sequence. */
   private static enum Entry {
     TOP_LEFT,
@@ -157,8 +182,9 @@ public class MemoryActivity extends Activity {
 
   private static final int TINT_DELAY_MS = 500;
   private static final int TINT_FLASH_MS = 300;
+  private static final int RESET_FLASH_MS = 750;
 
-  private static final long[] GAME_EXTENDED_VIBRATION = new long[] {250, 100, 300, 100};
+  private static final long[] GAME_EXTENDED_VIBRATION = new long[] {200, 100};
   private static final long GAME_ENDED_VIBRATION = 500;
 
   private static final AudioAttributes VIBRATION_ATTRIBUTES = new AudioAttributes.Builder()
