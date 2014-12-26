@@ -11,7 +11,9 @@ import android.os.Bundle;
 import android.os.Vibrator;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewAnimationUtils;
 import android.widget.Button;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,6 +53,7 @@ public class MemoryActivity extends Activity {
             getResources().getColor(R.color.bottom_right_color),
             getResources().getColor(R.color.bottom_right_highlight_color) },
     };
+    _scoreView = (TextView) findViewById(R.id.score_view);
 
     for (final Entry entry : ENTRIES) {
       _buttons[entry.ordinal()].setOnClickListener(new View.OnClickListener() {
@@ -111,11 +114,11 @@ public class MemoryActivity extends Activity {
 
     List<Animator> tintAnimations = new ArrayList<>(_expectedEntries.size());
     for (Entry entry : _expectedEntries) {
-      int entryId = entry.ordinal();
       ObjectAnimator tintAnimation = ObjectAnimator.ofArgb(
-          _buttons[entryId].getBackground(),
-          "tint",
-          _buttonColors[entryId][0], _buttonColors[entryId][1], _buttonColors[entryId][0]);
+          _buttons[entry.ordinal()].getBackground(), "tint",
+          _buttonColors[entry.ordinal()][0],
+          _buttonColors[entry.ordinal()][1],
+          _buttonColors[entry.ordinal()][0]);
       tintAnimation.setDuration(TINT_FLASH_MS);
       tintAnimations.add(tintAnimation);
     }
@@ -140,25 +143,46 @@ public class MemoryActivity extends Activity {
 
   /** Shows a reset animation to introduce a break between games. */
   private void showEndGame() {
-    List<Animator> tintAnimations = new ArrayList<>(_expectedEntries.size());
+    AnimatorSet endAnimation = new AnimatorSet();
+
+    int cx = (_scoreView.getLeft() + _scoreView.getRight()) / 2;
+    int cy = (_scoreView.getTop() + _scoreView.getBottom()) / 2;
+    int radius = Math.max(_scoreView.getWidth(), _scoreView.getHeight());
+
+    // Show the score.
+    Animator showScoreAnim = ViewAnimationUtils.createCircularReveal(_scoreView, cx, cy, 0, radius);
+    _scoreView.setText(String.valueOf(_expectedEntries.size() - 1));
+    _scoreView.setVisibility(View.VISIBLE);
+
+    // At the same time fade out the squares.
     for (Entry entry : ENTRIES) {
-      int entryId = entry.ordinal();
       ObjectAnimator tintAnimation = ObjectAnimator.ofArgb(
-          _buttons[entryId].getBackground(),
-          "tint",
-          _buttonColors[entryId][0], Color.WHITE, _buttonColors[entryId][0]);
-      tintAnimation.setDuration(RESET_FLASH_MS);
-      tintAnimations.add(tintAnimation);
+          _buttons[entry.ordinal()].getBackground(), "tint",
+          _buttonColors[entry.ordinal()][0], _buttonColors[entry.ordinal()][1]);
+      tintAnimation.setDuration(RESET_TRANSITION_MS);
+      endAnimation.play(showScoreAnim).with(tintAnimation);
     }
 
-    AnimatorSet resetAnimation = new AnimatorSet();
-    resetAnimation.playTogether(tintAnimations);
-    resetAnimation.addListener(new AnimatorListenerAdapter() {
+    // After a delay hide the score.
+    Animator hideScoreAnim = ViewAnimationUtils.createCircularReveal(_scoreView, cx, cy, radius, 0);
+    endAnimation.play(hideScoreAnim).after(SHOW_SCORE_MS).after(showScoreAnim);
+
+    // And at the same time fade the squares back in.
+    for (Entry entry : ENTRIES) {
+      ObjectAnimator tintAnimation = ObjectAnimator.ofArgb(
+          _buttons[entry.ordinal()].getBackground(), "tint",
+          _buttonColors[entry.ordinal()][1], _buttonColors[entry.ordinal()][0]);
+      tintAnimation.setDuration(RESET_TRANSITION_MS);
+      endAnimation.play(hideScoreAnim).with(tintAnimation);
+    }
+
+    endAnimation.addListener(new AnimatorListenerAdapter() {
       @Override public void onAnimationEnd(Animator animation) {
+        _scoreView.setVisibility(View.INVISIBLE);
         startNewGame();
       }
     });
-    resetAnimation.start();
+    endAnimation.start();
   }
 
   /** Describes an entry in the sequence. */
@@ -175,6 +199,7 @@ public class MemoryActivity extends Activity {
 
   private Button[] _buttons;
   private int[][] _buttonColors;
+  private TextView _scoreView;
 
   private Vibrator _vibrator;
 
@@ -182,7 +207,8 @@ public class MemoryActivity extends Activity {
 
   private static final int TINT_DELAY_MS = 500;
   private static final int TINT_FLASH_MS = 300;
-  private static final int RESET_FLASH_MS = 750;
+  private static final int RESET_TRANSITION_MS = 250;
+  private static final int SHOW_SCORE_MS = 1000;
 
   private static final long[] GAME_EXTENDED_VIBRATION = new long[] {200, 100};
   private static final long GAME_ENDED_VIBRATION = 500;
