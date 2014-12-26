@@ -6,10 +6,9 @@
 
     <uses-permission android:name="android.permission.VIBRATE" />
 
+    <!-- There is no activity because this is a Wear-only app. -->
     <application
         android:allowBackup="true"
-        android:label="@string/app_name"
-        android:icon="@drawable/launcher">
-        <!-- There is no activity because this is a Wear-only app. -->
-    </application>
+        android:icon="@drawable/launcher"
+        android:label="@string/app_name"/>
 </manifest>
