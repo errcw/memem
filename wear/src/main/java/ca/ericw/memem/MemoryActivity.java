@@ -5,7 +5,6 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
-import android.graphics.Color;
 import android.media.AudioAttributes;
 import android.os.Bundle;
 import android.os.Vibrator;
@@ -89,14 +88,12 @@ public class MemoryActivity extends Activity {
         extendGame();
       }
     } else {
-      _vibrator.vibrate(GAME_ENDED_VIBRATION, VIBRATION_ATTRIBUTES);
       showEndGame();
     }
   }
 
   /** Starts a new game. */
   private void startNewGame() {
-    Log.d(TAG, "Starting new game");
     _expectedEntries.clear();
     extendGame();
   }
@@ -108,7 +105,7 @@ public class MemoryActivity extends Activity {
     showSequence();
   }
 
-  /** Shows the sequence to the player. */
+  /** Shows the color sequence to the player. */
   private void showSequence() {
     Log.d(TAG, _expectedEntries.toString());
 
@@ -183,6 +180,8 @@ public class MemoryActivity extends Activity {
       }
     });
     endAnimation.start();
+
+    _vibrator.vibrate(GAME_ENDED_VIBRATION, VIBRATION_ATTRIBUTES);
   }
 
   /** Describes an entry in the sequence. */
@@ -194,7 +193,7 @@ public class MemoryActivity extends Activity {
   }
   private static final Entry[] ENTRIES = Entry.values();
 
-  private List<Entry> _expectedEntries;
+  private final List<Entry> _expectedEntries;
   private int _currentExpectedEntry;
 
   private Button[] _buttons;
