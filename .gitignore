@@ -6,3 +6,5 @@
 /build
 /mobile/build
 /wear/build
+*.apk
+manifest-merger-release-report.txt
