@@ -2,8 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="ca.ericw.memem">
 
-    <uses-feature android:name="android.hardware.type.watch" />
-
     <uses-permission android:name="android.permission.VIBRATE" />
 
     <!-- There is no activity because this is a Wear-only app. -->
