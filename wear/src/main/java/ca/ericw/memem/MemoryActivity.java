@@ -38,6 +38,15 @@ public class MemoryActivity extends Activity {
         (Button) findViewById(R.id.bottom_left_button),
         (Button) findViewById(R.id.bottom_right_button),
     };
+    for (final Entry entry : ENTRIES) {
+      _buttons[entry.ordinal()].setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+          onEntryClicked(entry);
+        }
+      });
+    }
+
     _buttonColors = new int[][] {
         new int[] {
             getResources().getColor(R.color.top_left_color),
@@ -52,16 +61,16 @@ public class MemoryActivity extends Activity {
             getResources().getColor(R.color.bottom_right_color),
             getResources().getColor(R.color.bottom_right_highlight_color) },
     };
-    _scoreView = (TextView) findViewById(R.id.score_view);
 
-    for (final Entry entry : ENTRIES) {
-      _buttons[entry.ordinal()].setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-          onEntryClicked(entry);
-        }
-      });
-    }
+    _startView = (TextView) findViewById(R.id.start_view);
+    _startView.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        onStartClicked();
+      }
+    });
+
+    _scoreView = (TextView) findViewById(R.id.score_view);
 
     _vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
   }
@@ -69,7 +78,23 @@ public class MemoryActivity extends Activity {
   @Override
   protected void onResume() {
     super.onResume();
-    startNewGame();
+    _startView.setVisibility(View.VISIBLE);
+  }
+
+  /** Indicates the start banner was clicked. */
+  private void onStartClicked() {
+    int cx = (_startView.getLeft() + _startView.getRight()) / 2;
+    int cy = (_startView.getTop() + _startView.getBottom()) / 2;
+    int radius = Math.max(_startView.getWidth(), _startView.getHeight());
+    Animator hideStartAnim = ViewAnimationUtils.createCircularReveal(_startView, cx, cy, radius, 0);
+    hideStartAnim.addListener(new AnimatorListenerAdapter() {
+      @Override
+      public void onAnimationEnd(Animator anim) {
+        _startView.setVisibility(View.INVISIBLE);
+        startNewGame();
+      }
+    });
+    hideStartAnim.start();
   }
 
   /** Indicates the given entry was clicked. */
@@ -199,6 +224,7 @@ public class MemoryActivity extends Activity {
   private Button[] _buttons;
   private int[][] _buttonColors;
   private TextView _scoreView;
+  private TextView _startView;
 
   private Vibrator _vibrator;
 

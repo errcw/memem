@@ -54,13 +54,29 @@
     </TableLayout>
 
     <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text=""
         android:id="@+id/score_view"
-        android:gravity="center"
         android:textColor="@android:color/black"
         android:textSize="100sp"
-        android:visibility="invisible"/>
+        android:visibility="invisible"
+        android:layout_gravity="center"/>
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/start_text"
+        android:id="@+id/start_view"
+        android:textColor="@android:color/black"
+        android:textSize="15sp"
+        android:background="@android:color/white"
+        android:gravity="center"
+        android:clickable="true"
+        android:layout_gravity="center"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:lineSpacingExtra="5sp"/>
 </merge>
