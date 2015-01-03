@@ -79,6 +79,8 @@ public class MemoryActivity extends Activity {
   protected void onResume() {
     super.onResume();
     _startView.setVisibility(View.VISIBLE);
+    // Buttons will be enabled once the first sequence has been shown.
+    setButtonsEnabled(false);
   }
 
   /** Indicates the start banner was clicked. */
@@ -88,8 +90,7 @@ public class MemoryActivity extends Activity {
     int radius = Math.max(_startView.getWidth(), _startView.getHeight());
     Animator hideStartAnim = ViewAnimationUtils.createCircularReveal(_startView, cx, cy, radius, 0);
     hideStartAnim.addListener(new AnimatorListenerAdapter() {
-      @Override
-      public void onAnimationEnd(Animator anim) {
+      @Override public void onAnimationEnd(Animator anim) {
         _startView.setVisibility(View.INVISIBLE);
         startNewGame();
       }
@@ -150,14 +151,10 @@ public class MemoryActivity extends Activity {
     sequenceAnimation.playSequentially(tintAnimations);
     sequenceAnimation.addListener(new AnimatorListenerAdapter() {
       @Override public void onAnimationStart(Animator animation) {
-        for (Button button : _buttons) {
-          button.setEnabled(false);
-        }
+        setButtonsEnabled(false);
       }
       @Override public void onAnimationEnd(Animator animation) {
-        for (Button button : _buttons) {
-          button.setEnabled(true);
-        }
+        setButtonsEnabled(true);
       }
     });
     sequenceAnimation.start();
@@ -207,6 +204,16 @@ public class MemoryActivity extends Activity {
     endAnimation.start();
 
     _vibrator.vibrate(GAME_ENDED_VIBRATION, VIBRATION_ATTRIBUTES);
+
+    // Buttons will be enabled once the new sequence is shown.
+    setButtonsEnabled(false);
+  }
+
+  /** Configures whether the player input buttons are enabled. */
+  private void setButtonsEnabled(boolean enabled) {
+    for (Button button : _buttons) {
+      button.setEnabled(enabled);
+    }
   }
 
   /** Describes an entry in the sequence. */
