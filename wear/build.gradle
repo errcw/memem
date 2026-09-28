@@ -1,14 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 21
+    compileSdk 35
 
     defaultConfig {
         applicationId 'ca.ericw.memem'
         minSdkVersion 21
-        targetSdkVersion 21
-        versionCode 7
-        versionName '1.0.0'
+        targetSdkVersion 35
+        versionCode 8
+        versionName '1.1.0'
     }
     namespace 'ca.ericw.memem'
 }

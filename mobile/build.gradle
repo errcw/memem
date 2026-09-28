@@ -12,7 +12,3 @@ android {
     }
     namespace 'ca.ericw.memem'
 }
-
-dependencies {
-    wearApp project(':wear')
-}
